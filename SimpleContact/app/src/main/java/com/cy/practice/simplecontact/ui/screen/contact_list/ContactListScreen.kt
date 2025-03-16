@@ -1,9 +1,12 @@
 package com.cy.practice.simplecontact.ui.screen.contact_list
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +15,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,10 +25,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cy.practice.simplecontact.domain.model.Contact
 import com.cy.practice.simplecontact.ui.screen.contact_list.component.ContactBottomSheet
 import com.cy.practice.simplecontact.ui.screen.contact_list.component.ContactList
+import com.cy.practice.simplecontact.ui.screen.contact_list.component.IndexNavigation
 import com.cy.practice.simplecontact.ui.screen.contact_list.component.SearchBar
 import com.cy.practice.simplecontact.util.toDial
 import com.cy.practice.simplecontact.util.toSms
-import timber.log.Timber
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -53,6 +59,8 @@ fun ContactListScreen(
     onAction: (ContactListAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
     Scaffold(
         modifier = modifier.fillMaxWidth(),
     ) { innerPadding ->
@@ -68,10 +76,26 @@ fun ContactListScreen(
                 )
             }
 
-            ContactList(
-                state.filteredContacts,
-                { onAction(ContactListAction.ViewContact(it)) },
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                ContactList(
+                    state.filteredContacts,
+                    { onAction(ContactListAction.ViewContact(it)) },
+                    modifier = Modifier.fillMaxSize(), listState
+                )
+
+                IndexNavigation(
+                    state.filteredContacts.keys.toList(),
+                    { letter ->
+                        scope.launch {
+                            val index = state.getIndexPosition(letter)
+                            if (index >= 0) {
+                                listState.scrollToItem(index)
+                            }
+                        }
+                    },
+                    Modifier.align(Alignment.CenterEnd),
+                )
+            }
         }
     }
 
