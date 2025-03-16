@@ -48,6 +48,14 @@ class ContactListViewModel @Inject constructor(
     }
     private fun handleViewContact(contact: Contact?) {
         _uiState.update { it.copy(viewContact = contact) }
+        // could potentially load detail contacts information like emails, address, birthdays
+        //if (contact==null) return
+        //if (contact.isDetail) return
+        //viewModelScope.launch {
+        //    val detailedContact = contactsRepository.getDetailContactById(contact.id)
+        //    // update contacts & viewing contact
+        //    _update.update { it.copy(contacts=updatedContacts, viewContact=detailedContact}
+        //}
     }
 
     private fun handleSearchContacts(query: String) {

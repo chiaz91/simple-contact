@@ -51,7 +51,11 @@ class DeviceContactsSource (
 
     private fun getPhoneNumbers(contactId: String): List<String> {
         val phoneNumbers = mutableListOf<String>()
-        val projection = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
+        val projection = arrayOf(
+            ContactsContract.CommonDataKinds.Phone.NUMBER,
+//            ContactsContract.CommonDataKinds.Phone.TYPE,
+//            ContactsContract.CommonDataKinds.Phone.LABEL
+        )
         val selection = "${ContactsContract.CommonDataKinds.Phone.CONTACT_ID} = ?"
         val selectionArgs = arrayOf(contactId)
         val cursor = contentResolver.query(
@@ -63,8 +67,16 @@ class DeviceContactsSource (
         )
         cursor?.use {
             val numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+//            val typeIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE)
+//            val labelIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL)
             while (it.moveToNext()) {
                 val number = cursor.getString(numberIndex)
+//                val type = cursor.getInt(typeIndex)
+//                val customLabel = cursor.getString(labelIndex)
+//
+//                val label = ContactsContract.CommonDataKinds.Phone.getTypeLabel(
+//                    res, type, customLabel
+//                ).toString()
                 phoneNumbers.add(number)
             }
         }
