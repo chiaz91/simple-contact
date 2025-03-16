@@ -24,6 +24,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
+import com.cy.practice.simplecontact.ui.theme.blue
+import com.cy.practice.simplecontact.ui.theme.coral
+import com.cy.practice.simplecontact.ui.theme.green
+import com.cy.practice.simplecontact.ui.theme.lavender
+import com.cy.practice.simplecontact.ui.theme.peach
+import kotlin.math.absoluteValue
 
 
 @Composable
@@ -32,8 +38,11 @@ fun Avatar(
     photoUrl: String?,
     modifier: Modifier = Modifier,
     size: Dp = 40.dp,
+    colors: List<Color> = listOf(blue, green, lavender, peach, coral)
 ) {
-    val color = MaterialTheme.colorScheme.primary
+    // pick a color based on name's hashcode
+    val colorIndex = name.hashCode().absoluteValue % colors.size
+    val color = colors[colorIndex]
 
     Box(
         modifier = modifier
