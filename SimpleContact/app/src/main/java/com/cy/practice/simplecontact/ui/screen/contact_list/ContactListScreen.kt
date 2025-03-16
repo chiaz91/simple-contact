@@ -22,10 +22,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cy.practice.simplecontact.ui.screen.contact_list.component.AdaptiveIndexNavigation
 import com.cy.practice.simplecontact.domain.model.Contact
 import com.cy.practice.simplecontact.ui.screen.contact_list.component.ContactBottomSheet
 import com.cy.practice.simplecontact.ui.screen.contact_list.component.ContactList
-import com.cy.practice.simplecontact.ui.screen.contact_list.component.IndexNavigation
 import com.cy.practice.simplecontact.ui.screen.contact_list.component.SearchBar
 import com.cy.practice.simplecontact.util.toDial
 import com.cy.practice.simplecontact.util.toSms
@@ -83,7 +83,7 @@ fun ContactListScreen(
                     modifier = Modifier.fillMaxSize(), listState
                 )
 
-                IndexNavigation(
+                AdaptiveIndexNavigation(
                     state.filteredContacts.keys.toList(),
                     { letter ->
                         scope.launch {
