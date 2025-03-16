@@ -27,6 +27,17 @@ class ContactListViewModel @Inject constructor(
             ContactListState()
         )
 
+    fun onAction(action: ContactListAction) {
+        when (action) {
+            is ContactListAction.SearchContacts -> handleSearchContacts(action.query)
+        }
+    }
+
+    private fun handleSearchContacts(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+        val filteredContacts = filterContacts(query)
+        _uiState.update { it.copy(filteredContacts = filteredContacts) }
+    }
 
 
     private fun loadContacts() {
@@ -36,6 +47,7 @@ class ContactListViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     contacts = contacts,
+                    filteredContacts = contacts,
                     isLoading = false
                 )
             }
@@ -50,6 +62,19 @@ class ContactListViewModel @Inject constructor(
                 if (firstChar in 'A'..'Z') firstChar else '#'
             }
             .toSortedMap(compareBy<Char> { it == '#' }.thenBy { it })
+    }
+
+    private fun filterContacts(query: String): Map<Char, List<Contact>> {
+        val allContacts = _uiState.value.contacts
+        return if (query.isBlank()) {
+            allContacts
+        } else {
+            allContacts.mapValues { (_, contacts) ->
+                contacts.filter { it.isMatch(query) }
+            }.filterValues {
+                it.isNotEmpty()
+            }
+        }
     }
 
 }

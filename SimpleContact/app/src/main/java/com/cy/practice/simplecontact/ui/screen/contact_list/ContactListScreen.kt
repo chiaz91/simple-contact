@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cy.practice.simplecontact.domain.model.Contact
 import com.cy.practice.simplecontact.ui.screen.contact_list.component.ContactList
+import com.cy.practice.simplecontact.ui.screen.contact_list.component.SearchBar
 
 
 @Composable
@@ -23,27 +24,32 @@ fun ContactListScreen(
     vm: ContactListViewModel = viewModel()
 ) {
     val state by vm.uiState.collectAsStateWithLifecycle()
-    ContactListScreen(state, modifier)
+    ContactListScreen(state, vm::onAction, modifier)
 }
 
 
 @Composable
 fun ContactListScreen(
     state: ContactListState,
+    onAction: (ContactListAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     Scaffold(
         modifier = modifier.fillMaxWidth(),
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
+            SearchBar(
+                query = state.searchQuery,
+                onQueryChanged = { query -> onAction(ContactListAction.SearchContacts(query)) },
+                onClear = { onAction(ContactListAction.SearchContacts("")) },
+            )
             AnimatedVisibility(visible = state.isLoading) {
                 LinearProgressIndicator(
                     Modifier.fillMaxWidth()
                 )
             }
 
-            ContactList(state.contacts)
+            ContactList(state.filteredContacts)
         }
     }
 }
@@ -68,10 +74,10 @@ private fun ContactListScreenPreview() {
     )
     val state = ContactListState(
         isLoading = true,
-        contacts = groupedContacts
+        filteredContacts = groupedContacts
     )
     MaterialTheme {
-        ContactListScreen(state)
+        ContactListScreen(state,{})
     }
 }
 
