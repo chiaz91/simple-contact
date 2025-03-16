@@ -6,6 +6,8 @@ import com.cy.practice.simplecontact.domain.model.Contact
 import com.cy.practice.simplecontact.domain.repository.ContactRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -14,10 +16,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val DEBOUNCE_DELAY = 500L
+
 @HiltViewModel
 class ContactListViewModel @Inject constructor(
     private val contactRepository: ContactRepository
 ) : ViewModel() {
+    private var searchJob: Job? = null
+
     private val _uiState = MutableStateFlow(ContactListState())
     val uiState = _uiState
         .onStart { loadContacts() }
@@ -35,8 +41,13 @@ class ContactListViewModel @Inject constructor(
 
     private fun handleSearchContacts(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
-        val filteredContacts = filterContacts(query)
-        _uiState.update { it.copy(filteredContacts = filteredContacts) }
+        // debounce search
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(DEBOUNCE_DELAY)
+            val filteredContacts = filterContacts(query)
+            _uiState.update { it.copy(filteredContacts = filteredContacts) }
+        }
     }
 
 
