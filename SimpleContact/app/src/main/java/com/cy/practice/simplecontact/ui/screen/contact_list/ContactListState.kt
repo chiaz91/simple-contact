@@ -8,4 +8,5 @@ data class ContactListState(
     val searchQuery: String = "",
     val contacts: Map<Char, List<Contact>> = emptyMap(),
     val filteredContacts: Map<Char, List<Contact>> = emptyMap(),
-    )
+    val viewContact: Contact? = null,
+)

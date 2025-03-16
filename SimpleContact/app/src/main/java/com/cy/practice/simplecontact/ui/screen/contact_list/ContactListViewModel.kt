@@ -7,10 +7,12 @@ import com.cy.practice.simplecontact.domain.repository.ContactRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,10 +35,19 @@ class ContactListViewModel @Inject constructor(
             ContactListState()
         )
 
+    private val _event = Channel<ContactListEvent>()
+    val event = _event.receiveAsFlow()
+
     fun onAction(action: ContactListAction) {
         when (action) {
+            is ContactListAction.ViewContact -> handleViewContact(action.contact)
             is ContactListAction.SearchContacts -> handleSearchContacts(action.query)
+            is ContactListAction.ToDial -> _event.trySend(ContactListEvent.ToDial(action.phone))
+            is ContactListAction.ToSms ->_event.trySend(ContactListEvent.ToSms(action.phone))
         }
+    }
+    private fun handleViewContact(contact: Contact?) {
+        _uiState.update { it.copy(viewContact = contact) }
     }
 
     private fun handleSearchContacts(query: String) {

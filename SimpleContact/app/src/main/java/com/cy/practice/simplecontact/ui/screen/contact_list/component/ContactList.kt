@@ -2,6 +2,7 @@ package com.cy.practice.simplecontact.ui.screen.contact_list.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,6 +70,7 @@ fun ContactListItem(contact: Contact, modifier: Modifier = Modifier) {
 @Composable
 fun ContactList(
     contacts: Map<Char, List<Contact>>,
+    onContactClicked: (Contact) -> Unit,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
 ) {
@@ -80,7 +82,10 @@ fun ContactList(
             items(
                 entry.value, key = { it.id }
             ) { contact ->
-                ContactListItem(contact = contact, Modifier.animateItem())
+                ContactListItem(
+                    contact = contact,
+                    Modifier.animateItem().clickable { onContactClicked(contact) }
+                )
             }
         }
     }
@@ -122,6 +127,6 @@ private fun ContactListScreenPreview(modifier: Modifier = Modifier) {
         )
     )
     MaterialTheme {
-        ContactList(groupedContacts)
+        ContactList(groupedContacts, {})
     }
 }
