@@ -1,5 +1,6 @@
 package com.cy.practice.simplecontact.ui.screen.contact_list.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,12 +17,31 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cy.practice.simplecontact.domain.model.Contact
 
+
+@Composable
+fun ContactListHeader(header: String, modifier: Modifier = Modifier) {
+    Text(
+        text = header,
+        style = TextStyle(
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 20.sp
+        ),
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily.Serif,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(12.dp, 8.dp)
+    )
+}
 
 @Composable
 fun ContactListItem(contact: Contact, modifier: Modifier = Modifier) {
@@ -45,15 +65,23 @@ fun ContactListItem(contact: Contact, modifier: Modifier = Modifier) {
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactList(
-    contacts: List<Contact>,
+    contacts: Map<Char, List<Contact>>,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
 ) {
     LazyColumn(state = listState, modifier = modifier) {
-        items(contacts, key = { it.id }) { contact ->
-            ContactListItem(contact = contact, modifier = Modifier.animateItem())
+        contacts.map { entry ->
+            stickyHeader {
+                ContactListHeader(entry.key.toString(), Modifier.animateItem())
+            }
+            items(
+                entry.value, key = { it.id }
+            ) { contact ->
+                ContactListItem(contact = contact, Modifier.animateItem())
+            }
         }
     }
 }
@@ -79,11 +107,21 @@ private fun ContactListPreview(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun ContactListScreenPreview(modifier: Modifier = Modifier) {
-    val contacts = listOf(
-        Contact("1", "Alice"),
-        Contact("2", "Adam"),
+    val groupedContacts = mapOf(
+        'A' to listOf(
+            Contact("1", "Alice"),
+            Contact("2", "Adam"),
+        ),
+        'B' to listOf(
+            Contact("3", "Bella"),
+            Contact("4", "Blake"),
+        ),
+        'c' to listOf(
+            Contact("5", "Chris"),
+            Contact("6", "Clara"),
+        )
     )
     MaterialTheme {
-        ContactList(contacts)
+        ContactList(groupedContacts)
     }
 }

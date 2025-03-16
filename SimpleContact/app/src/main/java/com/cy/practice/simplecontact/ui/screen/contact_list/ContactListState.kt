@@ -5,6 +5,6 @@ import com.cy.practice.simplecontact.domain.model.Contact
 
 data class ContactListState(
     val isLoading: Boolean = false,
-    val contacts: List<Contact> = emptyList(),
+    val contacts: Map<Char, List<Contact>> = emptyMap(),
 ) {
 }

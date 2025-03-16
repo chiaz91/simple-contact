@@ -2,6 +2,7 @@ package com.cy.practice.simplecontact.ui.screen.contact_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cy.practice.simplecontact.domain.model.Contact
 import com.cy.practice.simplecontact.domain.repository.ContactRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,7 @@ class ContactListViewModel @Inject constructor(
     private fun loadContacts() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.Default) {
-            val contacts = contactRepository.getContacts()
+            val contacts = groupContacts(contactRepository.getContacts())
             _uiState.update {
                 it.copy(
                     contacts = contacts,
@@ -39,6 +40,16 @@ class ContactListViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+
+    private fun groupContacts(contacts: List<Contact>): Map<Char, List<Contact>> {
+        return contacts
+            .groupBy { contact ->
+                val firstChar = contact.initial?.uppercaseChar() ?: '#'
+                if (firstChar in 'A'..'Z') firstChar else '#'
+            }
+            .toSortedMap(compareBy<Char> { it == '#' }.thenBy { it })
     }
 
 }
