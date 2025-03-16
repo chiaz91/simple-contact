@@ -10,6 +10,12 @@ An Android native app created for personal practice. This project is designed to
 - Bottom sheet UI to display selected contact details.
 - Contact Index Navigation for quick access.
 
+## Screenshots
+| Screenshot 1 | Screenshot 2 |
+|-------------|-------------|
+| ![Screenshot 1](img/screenshot1.png) | ![Screenshot 2](img/screenshot2.png)|
+
+
 ## License
 This project is for personal practice and learning purposes. Feel free to fork and modify as needed.
 
